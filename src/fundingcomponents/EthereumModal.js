@@ -42,7 +42,6 @@ export const EthereumModal = (props) => {
   const futureDate = new Date(today);
   futureDate.setDate(futureDate.getDate() + defaultDay);
   let changeDate = futureDate.toISOString().slice(0, 10);
-  // setFutureDateString(changestring);
 
   useEffect(() => {
     if (window.ethereum) {
@@ -57,11 +56,9 @@ export const EthereumModal = (props) => {
         )
           disconnect();
       });
-      // window.ethereum.on("accountsChanged", () => {
-      //   window.location.reload();
-      // });
     }
   });
+
   useEffect(() => {
     (async () => {
       if (!address) return;
@@ -69,6 +66,7 @@ export const EthereumModal = (props) => {
       setstakedAmount(staked);
     })();
   }, [address]);
+
   useEffect(() => {
     (async () => {
       if (!address) return;
@@ -76,6 +74,7 @@ export const EthereumModal = (props) => {
       setwalletBalance(balance);
     })();
   }, [address]);
+
   useEffect(() => {
     (async () => {
       if (!address) return;
@@ -83,6 +82,7 @@ export const EthereumModal = (props) => {
       setTotalStaked(staked);
     })();
   }, [address]);
+
   useEffect(() => {
     (async () => {
       if (!address) return;
@@ -90,6 +90,7 @@ export const EthereumModal = (props) => {
       setAvailableStakeBalance(balance);
     })();
   }, [address]);
+
   useEffect(() => {
     (async () => {
       if (!address) return;
@@ -97,6 +98,7 @@ export const EthereumModal = (props) => {
       setRemainTimeToStake(timetoStake);
     })();
   }, [address]);
+
   useEffect(() => {
     (async () => {
       if (!address) return;
@@ -108,11 +110,16 @@ export const EthereumModal = (props) => {
   const onChangeDay = (pDay) => {
     setDefaultDay(pDay);
   };
+
   const changeStakeValue = (e) => {
     setStakeValue(e.target.value);
   };
 
   const onStake = async () => {
+    if (stakeValue <= 0 || isNaN(stakeValue)) {
+      AlertContext.setAlert("Please enter a valid stake amount.");
+      return;
+    }
     let ret = await stake(
       defaultDay === 15 ? 0 : defaultDay === 30 ? 1 : 2,
       stakeValue * 1e9,
@@ -121,9 +128,6 @@ export const EthereumModal = (props) => {
     AlertContext.setAlert(ret);
     setModalShow(false);
   };
-  // const onModal = async () => {
-  //   onSetModal(true);
-  // };
 
   const onUnstake = async () => {
     let ret = await unstake(address);
@@ -136,6 +140,7 @@ export const EthereumModal = (props) => {
     AlertContext.setAlert(ret);
     setModalShow(false);
   };
+
   return (
     <div className="EthereumModal">
       <StakeSettingModal
@@ -148,10 +153,6 @@ export const EthereumModal = (props) => {
         stakeValue={stakeValue}
         defaultDay={defaultDay}
       />
-      {/* <p
-        style={{ color: "white" }}
-      >{`${countdown.days} days, ${countdown.hours} hours, ${countdown.minutes} minutes`}</p> */}
-
       <div className="centerModal">
         <div className="btnGroup firstGroup">
           <div className="ethBtn ethBtn1 ethIconBtn">
@@ -223,7 +224,7 @@ export const EthereumModal = (props) => {
           </div>
           <div className=" ethBtn2 infoBtn">
             <span className="iSpan">Total ETH Staked</span>
-            <span className="cSpan">{totalStaked}</span>
+            <span class="cSpan">{totalStaked}</span>
           </div>
         </div>
         <div className="btnGroup">
@@ -235,10 +236,6 @@ export const EthereumModal = (props) => {
             <span className="iSpan">Munity Medals</span>
             <span className="cSpan">{accumulatedPoint}</span>
           </div>
-          {/* <div className=" ethBtn2 ethBtn3">
-            <span className="iSpan">Reward Balance</span>
-            <span className="cSpan">---</span>
-          </div> */}
         </div>
         <div className="btnGroup amountGroup">
           <div className="wSpan">Enter Stake Amount</div>

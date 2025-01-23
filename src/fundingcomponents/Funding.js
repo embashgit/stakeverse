@@ -18,6 +18,7 @@ import {
   getNftTotalStaked,
   tokenURI,
 } from "../utils/Contract";
+
 export const Funding = () => {
   const { address } = useAccount();
   const [availableNfts, setAvailableNfts] = useState([]);
@@ -27,48 +28,76 @@ export const Funding = () => {
   const [isStaked, setIsStaked] = useState([]);
   const [tokenId, setTokenId] = useState(0);
   const [currentStaked, setCurrentStaked] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const resetTokenID = (tokenId) => {
     setTokenId(tokenId);
-  }
+  };
+
   const resetCurrentStaked = (tokenId) => {
     setCurrentStaked(tokenId);
-  }
+  };
 
   useEffect(() => {
-    (async () => {
+    const fetchNftData = async () => {
       if (!address) return;
-      let tokenIds = await getNftOwnedTokenIds(address);
-      let stakedIds = await getNftTotalStaked(address);
 
-      if (tokenIds.length === 0) {
-        setTokenId(stakedIds[0]);
-        setCurrentStaked(true);
-      } else {
-        setTokenId(tokenIds[0]);
-        setCurrentStaked(false);
-      }
+      setLoading(true);
+      setError(null);
 
-      setAvailableNftIds(tokenIds);
-      setStakedNftIds(stakedIds);
+      try {
+        // Fetch Token IDs and Staked IDs safely
+        const [tokenIds, stakedIds] = await Promise.allSettled([
+          getNftOwnedTokenIds(address),
+          getNftTotalStaked(address),
+        ]).then((results) =>
+          results.map((result) =>
+            result.status === "fulfilled" ? result.value : []
+          )
+        );
 
-      let images = [],
-        staked = [];
-      for (let i = 0; i < tokenIds.length; i++) {
-        let imageUrl = await tokenURI(tokenIds[i], address);
-        images.push(imageUrl);
-        staked.push(false);
+        // Set default token and staking state
+        if (tokenIds.length === 0 && stakedIds.length > 0) {
+          setTokenId(stakedIds[0]);
+          setCurrentStaked(true);
+        } else if (tokenIds.length > 0) {
+          setTokenId(tokenIds[0]);
+          setCurrentStaked(false);
+        }
+
+        // Update available and staked IDs
+        setAvailableNftIds(tokenIds);
+        setStakedNftIds(stakedIds);
+
+        // Fetch token URIs in parallel
+        const [availableImages, stakedImages] = await Promise.allSettled([
+          Promise.all(tokenIds.map((id) => tokenURI(id, address))),
+          Promise.all(stakedIds.map((id) => tokenURI(id, address))),
+        ]).then((results) =>
+          results.map((result) =>
+            result.status === "fulfilled" ? result.value : []
+          )
+        );
+
+        setAvailableNfts(availableImages);
+        setStakedNfts(stakedImages);
+
+        // Update staking status
+        const isStakedArray = [
+          ...new Array(tokenIds.length).fill(false),
+          ...new Array(stakedIds.length).fill(true),
+        ];
+        setIsStaked(isStakedArray);
+      } catch (err) {
+        console.error("Error fetching NFT data:", err);
+        setError("Failed to load NFT data. Please try again later.");
+      } finally {
+        setLoading(false);
       }
-      setAvailableNfts(images);
-      images = [];
-      for (let i = 0; i < stakedIds.length; i++) {
-        let imageUrl = await tokenURI(stakedIds[i], address);
-        images.push(imageUrl);
-        staked.push(true);
-      }
-      setStakedNfts(images);
-      setIsStaked(staked);
-    })();
+    };
+
+    fetchNftData();
   }, [address]);
 
   return (
@@ -89,6 +118,8 @@ export const Funding = () => {
         }}
       >
         <Header />
+        {loading && <p>Loading NFT data...</p>}
+        {error && <p style={{ color: "red" }}>{error}</p>}
         <Content />
       </FundingContext.Provider>
     </div>

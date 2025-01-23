@@ -11,6 +11,7 @@ import {
   testNftStakingContractABI,
   testNftStakingContractAddress,
 } from "../utils/constants";
+import { Alert, AlertHeading } from "react-bootstrap";
 
 const { ethereum } = window;
 let ethStakingContractToGET,
@@ -30,7 +31,7 @@ const sepoliaChainId = 11155111,
   polygonChainId = 137,
   polygonChainIdHex = "0x89";
 
-//Initialize the Contract.
+// Initialize the Contract.
 export const initEthStakingContractToGET = async (address) => {
   walletAddressETHToGET = address;
   const provider = new ethers.providers.JsonRpcProvider(
@@ -59,88 +60,123 @@ export const initEthStakingContractToPOST = async (address) => {
   );
 };
 
+// Initialize NFT Collection Contract.
 export const initNftCollectionContractToGET = async (address) => {
   walletAddressNFTCollectionToGET = address;
-  // const provider = new ethers.providers.JsonRpcProvider(
-  //   `https://polygon-mainnet.g.alchemy.com/v2/2-6issytfOYX6y-qIln93YiqBR9Dojeo`
-  // );
   const provider = new ethers.providers.JsonRpcProvider(
     `https://eth-sepolia.g.alchemy.com/v2/EAChkFYXxIJD1QFY7DkiJDEkRcEeF6fk`
   );
+
   const signer = provider.getSigner(address);
 
   nftCollectionContractToGET = new ethers.Contract(
-    testNftCollectionAddress,
-    testNftCollectionABI,
-    signer
-  );
-  // nftCollectionContractToGET = new ethers.Contract(
-  //   nftCollectionAddress,
-  //   nftCollectionABI,
-  //   signer
-  // );
-};
-
-export const initNftCollectionContractToPOST = async (address) => {
-  walletAddressNFTCollectionToPOST = address;
-  const provider = new ethers.providers.Web3Provider(ethereum);
-  await provider.send("eth_requestAccounts", []);
-  // const provider = new ethers.providers.JsonRpcProvider(
-  //   `https://eth-sepolia.g.alchemy.com/v2/EAChkFYXxIJD1QFY7DkiJDEkRcEeF6fk`
-  // );
-  const signer = provider.getSigner();
-  // const signer = provider.getSigner("");
-
-  nftCollectionContractToPOST = new ethers.Contract(
-    testNftCollectionAddress,
-    testNftCollectionABI,
+    nftCollectionAddress,
+    nftCollectionABI,
     signer
   );
 };
 
+// Initialize NFT Staking Contract.
 export const initNftStakingContractToGET = async (address) => {
   walletAddressNFTStakingToGET = address;
   const provider = new ethers.providers.JsonRpcProvider(
     `https://eth-sepolia.g.alchemy.com/v2/EAChkFYXxIJD1QFY7DkiJDEkRcEeF6fk`
   );
-  // const provider = new ethers.providers.JsonRpcProvider(
-  //   `https://eth-sepolia.g.alchemy.com/v2/EAChkFYXxIJD1QFY7DkiJDEkRcEeF6fk`
-  // );
+
   const signer = provider.getSigner(address);
-  // const signer = provider.getSigner("");
 
   nftStakingContractToGET = new ethers.Contract(
-    testNftStakingContractAddress,
-    testNftStakingContractABI,
+    nftStakingContractAddress,
+    nftStakingContractABI,
     signer
   );
-  // nftStakingContractToGET = new ethers.Contract(nftStakingContractAddress, nftStakingContractABI, signer)
-  return nftStakingContractToGET;
 };
 
+// Initialize NFT Collection Contract for POST.
+export const initNftCollectionContractToPOST = async (address) => {
+  walletAddressNFTCollectionToPOST = address;
+  const provider = new ethers.providers.Web3Provider(ethereum);
+  await provider.send("eth_requestAccounts", []);
+  const signer = provider.getSigner();
+
+  nftCollectionContractToPOST = new ethers.Contract(
+    nftCollectionAddress,
+    nftCollectionABI,
+    signer
+  );
+};
+
+// Initialize NFT Staking Contract for POST.
 export const initNftStakingContractToPOST = async (address) => {
   walletAddressNFTStakingToPOST = address;
   const provider = new ethers.providers.Web3Provider(ethereum);
   await provider.send("eth_requestAccounts", []);
-  // const provider = new ethers.providers.JsonRpcProvider(
-  //   `https://eth-sepolia.g.alchemy.com/v2/EAChkFYXxIJD1QFY7DkiJDEkRcEeF6fk`
-  // );
   const signer = provider.getSigner();
-  // const signer = provider.getSigner("");
 
   nftStakingContractToPOST = new ethers.Contract(
-    testNftStakingContractAddress,
-    testNftStakingContractABI,
+    nftStakingContractAddress,
+    nftStakingContractABI,
     signer
   );
-  // nftStakingContractToPOST = new ethers.Contract(nftStakingContractAddress, nftStakingContractABI, signer)
 };
 
-// -------------------------------For ETH Staking Contracts--------------------
+export const stake = async (mode, price, address) => {
+  if (price === undefined || isNaN(price) || price <= 0) {
+    return {
+      status: "danger",
+      msg: "Invalid price value. Please provide a valid number.",
+    };
+  }
 
+  const chainId = await window.ethereum.request({ method: "eth_chainId" });
+  if (parseInt(chainId, 16) !== sepoliaChainId) {
+    try {
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: sepoliaChainIdHex }],
+      });
+    } catch (error) {
+      console.log("error", error);
+    }
+  }
+  try {
+    if (!ethStakingContractToPOST || address !== walletAddressETHToPOST) {
+      await initEthStakingContractToPOST(address);
+    }
+    console.log("Staking with address:", address);
+    console.log("Contract address:", ethStakingContractToPOST.address);
+    console.log("Staking mode:", mode);
+    console.log("Staking value:", BigNumber.from(1e9).mul(price).toString());
+
+    let tx = await ethStakingContractToPOST.stake(mode, {
+      value: BigNumber.from(1e9).mul(price),
+    });
+    let res = await tx.wait();
+    if (res.transactionHash) {
+      return {
+        status: "success",
+        msg: "You have successfully staked.",
+      };
+    } else {
+      return {
+        status: "danger",
+        msg: "Failed Staking.",
+      };
+    }
+  } catch (err) {
+    console.error("Staking error:", err);
+    return {
+      status: "danger",
+      msg: err?.error ? err?.error?.message : "User rejected the transaction."
+    };
+  }
+};
+
+// Add the missing functions
 export const getStakeBalance = async (address) => {
-  if (!ethStakingContractToGET || address !== walletAddressETHToGET)
+  if (!ethStakingContractToGET || address !== walletAddressETHToGET) {
     await initEthStakingContractToGET(address);
+  }
 
   let balance = await ethStakingContractToGET.getStakeBalance(address);
   return parseFloat(BigNumber.from(balance).div(1e15)) / 1e3;
@@ -155,173 +191,108 @@ export const getWalletBalance = async (address) => {
 };
 
 export const getTotalStaked = async (address) => {
-  if (!ethStakingContractToGET || address !== walletAddressETHToGET)
+  if (!ethStakingContractToGET || address !== walletAddressETHToGET) {
     await initEthStakingContractToGET(address);
+  }
   let balance = await ethStakingContractToGET.totalStaked();
   return parseFloat(BigNumber.from(balance).div(1e15)) / 1e3;
 };
 
-export const getRemainTimeToStake = async (address) => {
-  if (!ethStakingContractToGET || address !== walletAddressETHToGET)
-    await initEthStakingContractToGET(address);
-  let remainTime = await ethStakingContractToGET.getRemainTimeToStake(address);
-  return parseInt(BigNumber.from(remainTime).mul(1));
-};
-
 export const getAvailableStakeBalance = async (address) => {
-  if (!ethStakingContractToGET || address !== walletAddressETHToGET)
+  if (!ethStakingContractToGET || address !== walletAddressETHToGET) {
     await initEthStakingContractToGET(address);
+  }
   let availableStakeBalance =
     await ethStakingContractToGET.getAvailableStakeBalance(address);
   return parseFloat(BigNumber.from(availableStakeBalance).div(1e15)) / 1e3;
 };
 
-export const getAccumulatedPoint = async (address) => {
-  if (!ethStakingContractToGET || address !== walletAddressETHToGET)
+export const getRemainTimeToStake = async (address) => {
+  if (!ethStakingContractToGET || address !== walletAddressETHToGET) {
     await initEthStakingContractToGET(address);
+  }
+  let remainTime = await ethStakingContractToGET.getRemainTimeToStake(address);
+  return parseInt(BigNumber.from(remainTime).mul(1));
+};
+
+export const getAccumulatedPoint = async (address) => {
+  if (!ethStakingContractToGET || address !== walletAddressETHToGET) {
+    await initEthStakingContractToGET(address);
+  }
   let accumulatedPoint = await ethStakingContractToGET.getAccumulatedPoint(
     address
   );
   return parseFloat(BigNumber.from(accumulatedPoint).div(1e15)) / 1e3;
 };
 
-export const stake = async (mode, price, address) => {
-  const chainId = await window.ethereum.request({ method: "eth_chainId" });
-  if (parseInt(chainId, 16) !== sepoliaChainId) {
-    try {
-      await window.ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: sepoliaChainIdHex }],
-      });
-    } catch (error) {
-      console.log("error", error);
-    }
-  }
-  try {
-    if (!ethStakingContractToPOST || address !== walletAddressETHToPOST)
-      await initEthStakingContractToPOST(address);
-    let tx = await ethStakingContractToPOST.stake(mode, {
-      value: BigNumber.from(1e9).mul(price),
-    });
-    let res = await tx.wait();
-    if (res.transactionHash) {
-      return {
-        status: "success",
-        msg: "You have successfully staked.",
-      };
-    } else
-      return {
-        status: "danger",
-        msg: "Failed Staking.",
-      };
-  } catch (err) {
-    return {
-      status: "danger",
-      msg: err.error ? err.error.message : "User rejected the transaction."
-    };
-  }
-};
-
 export const unstake = async (address) => {
-  const chainId = await window.ethereum.request({ method: "eth_chainId" });
-  if (parseInt(chainId, 16) !== sepoliaChainId) {
-    try {
-      await window.ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: sepoliaChainIdHex }],
-      });
-    } catch (error) {
-      console.log("error", error);
-    }
+  if (!ethStakingContractToGET || address !== walletAddressETHToGET) {
+    await initEthStakingContractToGET(address);
   }
-  try {
-    if (!ethStakingContractToPOST || address !== walletAddressETHToPOST)
-      await initEthStakingContractToPOST(address);
-    let tx = await ethStakingContractToPOST.unstake();
-    let res = await tx.wait();
-    if (res.transactionHash) {
-      return {
-        status: "success",
-        msg: "You have successfully staked.",
-      };
-    } else
-      return {
-        status: "danger",
-        msg: "Failed unStaking.",
-      };
-  } catch (err) {
-    return {
-      status: "danger",
-      msg: err.error ? err.error.message : "User rejected the transaction."
-    };
-  }
+  await ethStakingContractToGET.unstake();
 };
 
 export const emergencyUnstake = async (address) => {
-  const chainId = await window.ethereum.request({ method: "eth_chainId" });
-  if (parseInt(chainId, 16) !== sepoliaChainId) {
-    try {
-      await window.ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: sepoliaChainIdHex }],
-      });
-    } catch (err) {
-      return {
-        status: "danger",
-        msg: err.error ? err.error.message : "User rejected the transaction.",
-      };
-    }
+  if (!ethStakingContractToGET || address !== walletAddressETHToGET) {
+    await initEthStakingContractToGET(address);
   }
-  try {
-    if (!ethStakingContractToPOST || address !== walletAddressETHToPOST)
-      await initEthStakingContractToPOST(address);
-    let tx = await ethStakingContractToPOST.emergencyUnstake();
-    let res = await tx.wait();
-    if (res.transactionHash) {
-      return {
-        status: "success",
-        msg: "You have successfully unstaked.",
-      };
-    } else
-      return {
-        status: "danger",
-        msg: "Failed unStaking.",
-      };
-  } catch (err) {
-    return {
-      status: "danger",
-      msg: err.error ? err.error.message : "User rejected the transaction."
-    };
-  }
+  await ethStakingContractToGET.emergencyUnstake();
 };
 
-// -------------------------------For NFT Collection Contracts--------------------
 
 export const getNftOwnedTokenIds = async (address) => {
-  if (
-    !nftCollectionContractToGET ||
-    address !== walletAddressNFTCollectionToGET
-  )
-    await initNftCollectionContractToGET(address);
-  let balance = await nftCollectionContractToGET.balanceOf(address);
-  let tokenIds = [];
-  for (let i = 0; i < balance; i++) {
-    let tokenId = await nftCollectionContractToGET.tokenOfOwnerByIndex(
-      address,
-      i
-    );
-    tokenIds.push(parseInt(BigNumber.from(tokenId).mul(1)));
+  try {
+    if (
+      !nftCollectionContractToGET ||
+      address !== walletAddressNFTCollectionToGET
+    ) {
+      await initNftCollectionContractToGET(address);
+    }
+
+    console.log("Fetching balance for address:", address);
+    console.log("Contract address:", nftCollectionContractToGET.address);
+
+    // Try fetching the balance of NFTs
+    const balance = await nftCollectionContractToGET.balanceOf(address);
+    console.log("NFT Balance:", balance.toString());
+
+    // Fetch token IDs for each balance
+    const tokenIds = [];
+    for (let i = 0; i < balance; i++) {
+      const tokenId = await nftCollectionContractToGET.tokenOfOwnerByIndex(
+        address,
+        i
+      );
+      tokenIds.push(parseInt(BigNumber.from(tokenId).toString(), 10));
+    }
+
+    return tokenIds;
+  } catch (error) {
+    // Gracefully handle errors by logging them and returning an empty array
+    if (error.code === "CALL_EXCEPTION") {
+      console.error(
+        "Smart contract call exception while fetching NFT token IDs:",
+        error
+      );
+    } else if (error.response && error.response.status === 404) {
+      console.error("404 Not Found while making RPC call:", error.response.data);
+    } else {
+      console.error("Unknown error fetching NFT token IDs:", error);
+    }
+
+    return [];
   }
-  return tokenIds;
 };
+
 
 export const tokenURI = async (tokenId, address) => {
   if (tokenId < 0) return 0;
   if (
     !nftCollectionContractToGET ||
     address !== walletAddressNFTCollectionToGET
-  )
+  ) {
     await initNftCollectionContractToGET(address);
+  }
 
   let tokenURI = await nftCollectionContractToGET.tokenURI(tokenId);
   let json = await fetch(
@@ -331,11 +302,10 @@ export const tokenURI = async (tokenId, address) => {
   return "https://gateway.pinata.cloud/ipfs/" + nftMetaData.image.substr(7);
 };
 
-// -------------------------------For NFT Staking Contracts--------------------
-
 export const getNftTotalStaked = async (address) => {
-  if (!nftStakingContractToGET || address !== walletAddressNFTStakingToGET)
+  if (!nftStakingContractToGET || address !== walletAddressNFTStakingToGET) {
     await initNftStakingContractToGET(address);
+  }
   let ownedTokens = await nftStakingContractToGET.getOwnedTokens(address);
   let stakedIds = [];
   for (let i = 0; i < ownedTokens.length; i++) {
@@ -345,8 +315,9 @@ export const getNftTotalStaked = async (address) => {
 };
 
 export const getNftTokenMunityMedals = async (address, tokenId) => {
-  if (!nftStakingContractToGET || address !== walletAddressNFTStakingToGET)
+  if (!nftStakingContractToGET || address !== walletAddressNFTStakingToGET) {
     await initNftStakingContractToGET(address);
+  }
   let munityMedals = await nftStakingContractToGET.getTokenMunityMedals(
     BigNumber.from(tokenId).mul(1)
   );
@@ -354,8 +325,9 @@ export const getNftTokenMunityMedals = async (address, tokenId) => {
 };
 
 export const getDaysToUnstake = async (tokenId, address) => {
-  if (!nftStakingContractToGET || address !== walletAddressNFTStakingToGET)
+  if (!nftStakingContractToGET || address !== walletAddressNFTStakingToGET) {
     await initNftStakingContractToGET(address);
+  }
   let daysToUnstake = await nftStakingContractToGET.getDaysToUnstake(tokenId);
   return parseInt(BigNumber.from(daysToUnstake).div(60 * 60 * 24));
 };
@@ -373,14 +345,18 @@ export const nftStake = async (address, tokenId) => {
     }
   }
   try {
-    if (!nftStakingContractToPOST || address !== walletAddressNFTStakingToPOST)
+    if (!nftStakingContractToPOST || address !== walletAddressNFTStakingToPOST) {
       await initNftStakingContractToPOST(address);
-    if (!nftCollectionContractToPOST)
+    }
+    if (!nftCollectionContractToPOST) {
       await initNftCollectionContractToPOST(address);
+    }
 
+    console.log("Approving token with ID:", tokenId);
     let apptx = await nftCollectionContractToPOST.approve(testNftStakingContractAddress, tokenId);
     let appres = await apptx.wait();
     if (appres.transactionHash) {
+      console.log("Approval successful, staking token with ID:", tokenId);
       let tx = await nftStakingContractToPOST.stake(tokenId);
       let res = await tx.wait();
       if (res.transactionHash) {
@@ -388,13 +364,15 @@ export const nftStake = async (address, tokenId) => {
           status: "success",
           msg: "You have staked token.",
         };
-      } else
+      } else {
         return {
           status: "danger",
           msg: "Failed Staking.",
         };
+      }
     }
   } catch (err) {
+    console.error("NFT Staking error:", err);
     return {
       status: "danger",
       msg: err.error ? err.error.message : "User rejected the transaction."
@@ -415,8 +393,9 @@ export const nftUnstake = async (address, tokenId) => {
     }
   }
   try {
-    if (!nftStakingContractToPOST || address !== walletAddressNFTStakingToPOST)
+    if (!nftStakingContractToPOST || address !== walletAddressNFTStakingToPOST) {
       await initNftStakingContractToPOST(address);
+    }
     let tx = await nftStakingContractToPOST.unstake(tokenId);
     let res = await tx.wait();
     if (res.transactionHash) {
@@ -424,12 +403,14 @@ export const nftUnstake = async (address, tokenId) => {
         status: "success",
         msg: "You have successfully unstaked.",
       };
-    } else
+    } else {
       return {
         status: "danger",
         msg: "Failed Unstaking.",
       };
+    }
   } catch (err) {
+    console.error("NFT Unstaking error:", err);
     return {
       status: "danger",
       msg: err.error ? err.error.message : "User rejected the transaction."
@@ -450,21 +431,24 @@ export const nftClaimRewards = async (address) => {
     }
   }
   try {
-    if (!nftStakingContractToPOST || address !== walletAddressNFTStakingToPOST)
+    if (!nftStakingContractToPOST || address !== walletAddressNFTStakingToPOST) {
       await initNftStakingContractToPOST(address);
+    }
     let tx = await nftStakingContractToPOST.claimMunityMedal(address);
     let res = await tx.wait();
     if (res.transactionHash) {
       return {
         status: "success",
-        msg: "You have successfully claim munity medals.",
+        msg: "You have successfully claimed munity medals.",
       };
-    } else
+    } else {
       return {
         status: "danger",
         msg: "Failed Claim Rewards.",
       };
+    }
   } catch (err) {
+    console.error("NFT Claim Rewards error:", err);
     return {
       status: "danger",
       msg: "Failed Claim Rewards.",
