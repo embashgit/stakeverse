@@ -44,7 +44,7 @@ export const IContent1 = () => {
 
       {/* <AnimatedSection getStyles={getFadeTopStyles}> */}
       <div className="imgTitle">
-        <div class="border-gradient">
+        <div className="border-gradient">
           <div className="borderTitle leftTitle">
             <div className="MunityImage Img1"></div>
             <div className="bottomTitle1 bottomTitle">
@@ -70,7 +70,7 @@ export const IContent1 = () => {
             </div>
           </div>
         </div>
-        <div class="border-gradient">
+        <div className="border-gradient">
           <div className="borderTitle centerTitle">
             <div className="MunityImage Img2"></div>
             <div className="bottomTitle2 bottomTitle">
@@ -120,7 +120,7 @@ export const IContent1 = () => {
             </div>
           </div>
         </div>
-        <div class="border-gradient">
+        <div className="border-gradient">
           <div className="borderTitle rightTitle">
             <div className="MunityImage Img3"></div>
             <div className="bottomTitle3 bottomTitle">

@@ -18,8 +18,8 @@ export const Metahorse = () => {
   });
   return (
     <div className="Metahorse">
-      <div class="gradient gradient--4"></div>
-      <div class="gradient gradient--5"></div>
+      <div className="gradient gradient--4"></div>
+      <div className="gradient gradient--5"></div>
       <AnimatedSection getStyles={getFadeLeftStyles}>
         <div className="topTitle">
           <div id="line1"></div>

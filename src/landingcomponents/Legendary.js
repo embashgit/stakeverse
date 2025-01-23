@@ -8,7 +8,7 @@ export const Legendary = () => {
   });
   return (
     <div className="Legendary">
-      <div class="gradient gradient--6"></div>
+      <div className="gradient gradient--6"></div>
       <AnimatedSection getStyles={getFadeRightStyles}>
         <div className="topTitle">
           <div id="line1"></div>

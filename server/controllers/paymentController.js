@@ -149,7 +149,7 @@ exports.getPaymentStatus = asyncErrorHandler(async (req, res, next) => {
 
     const txn = {
         id: payment.txnId,
-        status: payment.resultInfo.resultStatus,
+        status: payment?.resultInfo?.resultStatus,
     }
 
     res.status(200).json({

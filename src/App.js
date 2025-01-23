@@ -22,6 +22,7 @@ import { MyContext } from "./landingcomponents/MyContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { LandingPage } from "./landingcomponents/LandingPage";
+import  ErrorBoundary from "./ErrorBoundary";
 const App = () => {
   // const [alertState, setAlertState] = useState(false);
   // const alert = useContext(MyContext);
@@ -53,6 +54,7 @@ const App = () => {
       });
   };
   return (
+     <ErrorBoundary>
     <div className="App">
       <ContextProvider>
         <MyContext.Provider value={{ setAlert }}>
@@ -66,6 +68,7 @@ const App = () => {
         </MyContext.Provider>
       </ContextProvider>
     </div>
+    </ErrorBoundary>
   );
 };
 

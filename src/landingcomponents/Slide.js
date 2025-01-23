@@ -43,7 +43,7 @@ export const Slide = () => {
   }, [index]);
   return (
     <div>
-      <div class="gradient gradient--c"></div>
+      <div className="gradient gradient--c"></div>
       <div className="slideshow">
         <div
           className="slideshowSlider"

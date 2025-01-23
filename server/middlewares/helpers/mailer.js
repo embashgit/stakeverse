@@ -14,7 +14,7 @@ exports.sendEmail = mailingData => {
   return transporter
     .sendMail(mailingData)
     .then(info =>{
-       console.log(`Message sent: ${info.response}`)
+       console.log(`Message sent: ${info?.response}`)
       })
     .catch(err => {
       console.log(`Problem sending email: ${err}`)

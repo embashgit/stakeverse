@@ -18,8 +18,8 @@ export const Munityadd = () => {
   });
   return (
     <div className="Munityadd">
-      <div class="gradient gradient--8"></div>
-      <div class="gradient gradient--9"></div>
+      <div className="gradient gradient--8"></div>
+      <div className="gradient gradient--9"></div>
       <AnimatedSection getStyles={getFadeTopStyles}>
         <div className="topTitle">
           <div id="line"></div>

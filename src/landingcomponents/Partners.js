@@ -43,7 +43,7 @@ export const Partners = () => {
   });
   return (
     <div className="Partners">
-      <div class="gradient gradient--7"></div>
+      <div className="gradient gradient--7"></div>
       <AnimatedSection getStyles={getFadeTopStyles}>
         <div className="topTitle">
           <div id="line"></div>

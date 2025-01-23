@@ -27,7 +27,7 @@ const getFadeTopStylesR = (isFadeLeftInViewPort) => ({
 export const Games = () => {
   return (
     <div className="Games">
-      <div class="gradient gradient--3"></div>
+      <div className="gradient gradient--3"></div>
       <AnimatedSection getStyles={getFadeTopStyles}>
         <div className="topTitle">
           <div id="line"></div>
