@@ -1,20 +1,9 @@
 import ArtImg from "../images/Art.png";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { AnimatedSection } from "./AnimatedSection";
 export const Art = () => {
-  const getFadeTopStyles = (isFadeLeftInViewPort) => ({
-    transition: "all 1s ease-in",
-    opacity: isFadeLeftInViewPort ? "1" : "0",
-    transform: isFadeLeftInViewPort ? "" : "translateY(40px)",
-  });
-  const getFadeRightStyles = (isFadeLeftInViewPort) => ({
-    transition: "all 1.8s ease-in",
-    opacity: isFadeLeftInViewPort ? "1" : "0",
-    transform: isFadeLeftInViewPort ? "" : "translateX(-100%)",
-  });
+
   return (
     <div className="Art">
-      <AnimatedSection getStyles={getFadeRightStyles}>
         <div className="topTitle">
           <div id="line1"></div>
           <div>
@@ -28,19 +17,14 @@ export const Art = () => {
 
           <div id="line2"></div>
         </div>
-      </AnimatedSection>
-
       <div className="bottomImg">
         <div className="rightText">
-          <AnimatedSection getStyles={getFadeTopStyles}>
             <div>
               <span className="type2 lgText">
                 <span className="type1 lgText">MUNITY</span> Studios specializes
                 in creating high-quality 3D art and animations.
               </span>
             </div>
-          </AnimatedSection>
-          <AnimatedSection getStyles={getFadeTopStyles}>
             <div>
               <span className="type3">
                 Since 2019, our seasoned team with 25+ years of management
@@ -49,8 +33,6 @@ export const Art = () => {
                 the immersive world of web3 gaming.
               </span>
             </div>
-          </AnimatedSection>
-          <AnimatedSection getStyles={getFadeTopStyles}>
             <div>
               <div className="bottomBtn">
                 Visit Hungri Games
@@ -59,16 +41,13 @@ export const Art = () => {
                 </span>
               </div>
             </div>
-          </AnimatedSection>
         </div>
-        <AnimatedSection getStyles={getFadeRightStyles}>
           <div
             className="daoImg"
             style={{
               backgroundImage: `url(${ArtImg})`,
             }}
           ></div>
-        </AnimatedSection>
       </div>
     </div>
   );

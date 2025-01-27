@@ -1,31 +1,22 @@
 import LegendaryImg from "../images/Legendary.png";
-import { AnimatedSection } from "./AnimatedSection";
+
 export const Legendary = () => {
-  const getFadeRightStyles = (isFadeLeftInViewPort) => ({
-    transition: "all 1.5s ease-in",
-    opacity: isFadeLeftInViewPort ? "1" : "0",
-    transform: isFadeLeftInViewPort ? "" : "translateX(100%)",
-  });
+
   return (
     <div className="Legendary">
       <div className="gradient gradient--6"></div>
-      <AnimatedSection getStyles={getFadeRightStyles}>
-        <div className="topTitle">
-          <div id="line1"></div>
-
-          <div>
-            <div className="text">
-              <span className="title title1">
-                <span style={{ color: "rgba(95, 61, 255, 1)" }}>Legendary</span>{" "}
-                Market Place
-              </span>
-            </div>
+      <div className="topTitle">
+        <div id="line1"></div>
+        <div>
+          <div className="text">
+            <span className="title title1">
+              <span style={{ color: "rgba(95, 61, 255, 1)" }}>Legendary</span>{" "}
+              Market Place
+            </span>
           </div>
-
-          <div id="line2"></div>
         </div>
-      </AnimatedSection>
-
+        <div id="line2"></div>
+      </div>
       <div className="bottomImg">
         <div className="rightText">
           <div>

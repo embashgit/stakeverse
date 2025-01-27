@@ -24,23 +24,8 @@ import Partner23Img from "../images/Partner23.png";
 import Partner24Img from "../images/Partner24.png";
 import Partner25Img from "../images/Partner25.png";
 import Partner26Img from "../images/Partner26.png";
-// import { AnimatedSection } from "../landingcomponents/AnimatedSection";
 export const IContent8 = () => {
-  //   const getFadeTopStyles = (isFadeLeftInViewPort) => ({
-  //     transition: "all 1s ease-in",
-  //     opacity: isFadeLeftInViewPort ? "1" : "0",
-  //     transform: isFadeLeftInViewPort ? "" : "translateY(40px)",
-  //   });
-  //   const getFadeRightStyles = (isFadeLeftInViewPort) => ({
-  //     transition: "all 1.8s ease-in",
-  //     opacity: isFadeLeftInViewPort ? "1" : "0",
-  //     transform: isFadeLeftInViewPort ? "" : "translateX(100%)",
-  //   });
-  //   const getFadeLeftStyles = (isFadeLeftInViewPort) => ({
-  //     transition: "all 1.8s ease-in",
-  //     opacity: isFadeLeftInViewPort ? "1" : "0",
-  //     transform: isFadeLeftInViewPort ? "" : "translateX(-100%)",
-  //   });
+ 
   return (
     <div className="IContent8">
       <div className="topTitle">

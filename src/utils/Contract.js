@@ -233,10 +233,10 @@ export const unstake = async (address) => {
 };
 
 export const emergencyUnstake = async (address) => {
-  if (!ethStakingContractToGET || address !== walletAddressETHToGET) {
-    await initEthStakingContractToGET(address);
-  }
-  await ethStakingContractToGET.emergencyUnstake();
+    if (!ethStakingContractToGET || address !== walletAddressETHToGET) {
+      await initEthStakingContractToGET(address);
+    }
+    await ethStakingContractToGET.emergencyUnstake();
 };
 
 
