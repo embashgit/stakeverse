@@ -28,6 +28,9 @@ Staking is presently accessible on the Sepolia Testnet, where participants will 
 ```
    npm install
 ```
+OR
+
+```npm install --legacy-peer-deps```
 
 ### Run on localhost
 
