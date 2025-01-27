@@ -15,7 +15,7 @@ Staking is presently accessible on the Sepolia Testnet, where participants will 
 ### Clone
 
 ```
-   git clone https://github.com/0x66eth/StakeVerse.git
+   git clone https://github.com/embashgit/stakeverse.git
 ```
 ### Change directory
 
